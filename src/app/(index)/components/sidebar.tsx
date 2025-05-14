@@ -64,16 +64,16 @@ const Sidebar = () => {
       <ListMenu
         menu="Dashboard"
         isOpen={isOpen}
-        link="/dashboard"
+        link="/"
         padding=""
         icon="mage--dashboard-3-fill"
       />
       <ListMenu
-        menu="Banner"
+        menu="Category"
         isOpen={isOpen}
-        link="/dashboard/banner"
+        link="/category"
         padding=""
-        icon="icon-park-solid--tent-banner"
+        icon="iconamoon--category-bold"
       />
       <ListMenuDropDown
         menu="Dropdown"
