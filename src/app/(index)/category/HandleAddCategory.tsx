@@ -8,17 +8,21 @@ import ModalFooter from "@/components/modalFooter";
 import apiService from "@/service/apiService";
 import { useState } from "react";
 
-const HandleAddCategory: React.FC = () => {
+interface handleProps {
+  fetchData: () => void;
+}
+
+interface errorFetch {
+  message?: string;
+  error?: string;
+  status?: number;
+}
+
+const HandleAddCategory: React.FC<handleProps> = ({ fetchData }) => {
   const [modalIsActive, setModalIsActive] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [name, setName] = useState("");
   const [errorName, setErrorName] = useState("");
-
-  interface errorFetch {
-    message?: string;
-    error?: string;
-    status?: number;
-  }
 
   const handleModal = () => {
     setModalTitle("Add Category");
@@ -36,6 +40,7 @@ const HandleAddCategory: React.FC = () => {
       const statusCode = response.status;
       if (statusCode === 201 || statusCode === 200) {
         handleModal();
+        fetchData();
       }
     } catch (error) {
       if ((error as errorFetch).status === 409) {
