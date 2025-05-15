@@ -3,13 +3,16 @@
 import Button from "@/components/button";
 import apiService from "@/service/apiService";
 import { useEffect, useState } from "react";
-import HandleAddCategory from "./HandleAddCategory";
+import HandleModalCategory from "./handleModal";
 interface Category {
   id: number;
   name: string;
 }
 const Category: React.FC = () => {
   const [categories, setCategories] = useState<Category[] | null>([]);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isModalActive, setIsModalActive] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -22,12 +25,48 @@ const Category: React.FC = () => {
     }
   };
 
+  const openAddModal = () => {
+    setEditingCategory(null);
+    setIsModalActive(true);
+  };
+  const openEditModal = (category: Category) => {
+    setEditingCategory(category);
+    setIsModalActive(true);
+  };
+  const openDeleteModal = (category: Category) => {
+    setEditingCategory(category);
+    setIsDeleteModal(true);
+    setIsModalActive(true);
+  };
+  const closeModal = () => {
+    setIsModalActive(false);
+    setTimeout(() => {
+      setIsDeleteModal(false);
+      setEditingCategory(null);
+    }, 500);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
   return (
     <>
-      <HandleAddCategory fetchData={fetchData} />
+      <div className="w-full pl-10">
+        <Button
+          loading={false}
+          onClick={openAddModal}
+          value={"Add Category"}
+          iconStart={<span className="typcn--plus mr-2"></span>}
+        />
+      </div>
+
+      <HandleModalCategory
+        isActive={isModalActive}
+        category={editingCategory}
+        onClose={closeModal}
+        fetchData={fetchData}
+        isDelete={isDeleteModal}
+      />
       <div className="px-5 py-3">
         <table className="w-full text-center">
           <thead>
@@ -46,7 +85,7 @@ const Category: React.FC = () => {
                   <td className="flex justify-center gap-2">
                     <Button
                       loading={false}
-                      onClick={() => {}}
+                      onClick={() => openEditModal(category)}
                       value={"Edit"}
                       type="warning"
                       size="sm"
@@ -56,7 +95,7 @@ const Category: React.FC = () => {
                     />
                     <Button
                       loading={false}
-                      onClick={() => {}}
+                      onClick={() => openDeleteModal(category)}
                       value={"Delete"}
                       type="danger"
                       size="sm"

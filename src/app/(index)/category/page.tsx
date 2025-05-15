@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Category",
 };
 
-const Category = () => {
+const CategoryPage = () => {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-2xl mb-5">Category Page</p>
@@ -15,4 +15,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default CategoryPage;

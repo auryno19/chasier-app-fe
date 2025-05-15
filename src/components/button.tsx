@@ -6,7 +6,7 @@ interface ButtonProps {
   value: string;
   iconStart?: React.ReactNode;
   iconEnd?: React.ReactNode;
-  type?: "primary" | "danger" | "warning";
+  type?: "primary" | "danger" | "warning" | "secondary";
   size?: "md" | "sm" | "xl";
 }
 
@@ -28,9 +28,11 @@ const Button: React.FC<ButtonProps> = ({
       setBackground("bg-red-500");
     } else if (type == "warning") {
       setBackground("bg-yellow-500");
+    } else if (type == "secondary") {
+      setBackground("bg-slate-500");
     }
     if (size == "md") {
-      setSizeButton("px-8 py-2");
+      setSizeButton("px-6 py-2");
     } else if (size == "sm") {
       setSizeButton("px-4 py-1 text-sm");
     } else if (size == "xl") {
