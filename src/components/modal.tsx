@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "@/app/context/themeContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface ModalProps {
   active: boolean;
@@ -15,26 +15,19 @@ const Modal: React.FC<ModalProps> = ({
   title,
   children,
 }) => {
-  const [isActive, setIsActive] = useState(false);
-
   const theme = useTheme();
   useEffect(() => {
-    setIsActive(active);
-    theme?.setBackdrop(isActive);
+    theme?.setBackdrop(active);
     if (theme?.backdropClicked) {
       setTimeout(() => {
         theme?.setBackdropClicked(false);
       }, 100);
     }
-  }, [isActive, theme, active]);
+  }, [theme, active]);
   return (
     <div
       className={`absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 min-w-[30rem] min-h-60 bg-slate-200 rounded-lg shadow-slate-700 shadow-lg z-50 flex flex-col text-slate-600 duration-300 transition-transform ${
-        isActive
-          ? theme?.backdropClicked
-            ? "scale-95"
-            : "scale-100"
-          : "scale-0"
+        active ? (theme?.backdropClicked ? "scale-95" : "scale-100") : "scale-0"
       }`}
     >
       <div
