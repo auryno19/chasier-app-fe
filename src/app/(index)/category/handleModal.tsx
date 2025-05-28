@@ -5,7 +5,9 @@ import FormField from "@/components/formField";
 import Modal from "@/components/modal";
 import ModalBody from "@/components/modalBody";
 import ModalFooter from "@/components/modalFooter";
-import apiService from "@/service/apiService";
+// import apiService from "@/service/apiService";
+import apiServiceAxios from "@/service/apiServiceAxios";
+import CustomApiError from "@/service/cutomApiError";
 import { useEffect, useState } from "react";
 
 interface Category {
@@ -19,12 +21,6 @@ interface HandleModalCategoryProps {
   isDelete: boolean;
   fetchData: () => void;
   onClose: () => void;
-}
-
-interface errorFetch {
-  message?: string;
-  error?: string;
-  status?: number;
 }
 
 const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
@@ -41,39 +37,51 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
     setName(category?.name || "");
   }, [category]);
 
+  const clearData = () => {
+    setName("");
+    setErrorName("");
+  };
   const submitData = async () => {
     try {
       const body = {
         name: name,
       };
-      let response;
       if (isDelete) {
-        response = await apiService.put(
-          `/category/delete/${category?.id}`,
-          null
-        );
+        await apiServiceAxios.put(`/category/delete/${category?.id}`);
+      } else if (category?.id) {
+        await apiServiceAxios.put(`/category/${category.id}`, body);
       } else {
-        if (category?.name != null) {
-          response = await apiService.put(`/category/${category.id}`, body);
-        } else {
-          response = await apiService.post("/category/add", body);
-        }
+        await apiServiceAxios.post("/category/add", body);
       }
-      if (response?.status === 200 || response?.status === 201) {
-        onClose();
-        fetchData();
-      }
+
+      onClose();
+      fetchData();
     } catch (error) {
-      if ((error as errorFetch).status === 409) {
-        const errors = (error as errorFetch).error as { name?: string };
-        setErrorName(errors?.name || "");
+      if (error instanceof CustomApiError) {
+        if (error.status === 409) {
+          // Handle conflict error (e.g., duplicate category name)
+          setErrorName(error.errors?.name || "Category name already exists");
+        } else if (error.status === 400) {
+          // Handle validation errors
+          setErrorName(error.errors?.name || "Invalid category name");
+        } else {
+          // Generic error message
+          setErrorName(error.message);
+        }
+      } else {
+        // Non-API errors (network, etc.)
+        setErrorName("An unexpected error occurred");
+        console.error("Submission error:", error);
       }
     }
   };
   return (
     <Modal
       active={isActive}
-      handleModal={onClose}
+      handleModal={() => {
+        onClose();
+        clearData();
+      }}
       title={category ? "Edit Category" : "Add Category"}
     >
       <ModalBody>
@@ -110,7 +118,10 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
           {isDelete && (
             <Button
               loading={false}
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                clearData();
+              }}
               value={"Cancel"}
               type={"secondary"}
             />
