@@ -6,6 +6,7 @@ import HandleModalCategory from "./handleModal";
 import apiServiceAxios from "@/service/apiServiceAxios";
 import Paginate from "@/components/paginate";
 import CustomApiError from "@/service/cutomApiError";
+import Toast from "@/components/toast";
 interface Category {
   id: number;
   name: string;
@@ -19,6 +20,12 @@ const Category: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const [statusToast, setStatusToast] = useState<
+    "error" | "success" | "warning"
+  >("success");
+  const [headerToast, setHeaderToast] = useState("");
+  const [messageToast, setMessageToast] = useState("");
+  const [activeToast, setActiveToast] = useState(false);
 
   const fetchData = async (page: number) => {
     try {
@@ -71,10 +78,23 @@ const Category: React.FC = () => {
 
   useEffect(() => {
     fetchData(1);
+    if (activeToast) {
+      const timer = setTimeout(() => {
+        setActiveToast(false);
+      }, 4000); // pastikan direset setelah selesai
+      return () => clearTimeout(timer);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeToast]);
   return (
     <>
+      <Toast
+        status={statusToast}
+        header={headerToast}
+        message={messageToast}
+        active={activeToast}
+      />
+
       <div className="w-full pl-5">
         <Button
           loading={false}
@@ -83,13 +103,16 @@ const Category: React.FC = () => {
           iconStart={<span className="typcn--plus mr-2"></span>}
         />
       </div>
-
       <HandleModalCategory
         isActive={isModalActive}
         category={editingCategory}
         onClose={closeModal}
         fetchData={() => fetchData(page)}
         isDelete={isDeleteModal}
+        setActiveToast={setActiveToast}
+        setHeaderToast={setHeaderToast}
+        setMessageToast={setMessageToast}
+        setStatusToast={setStatusToast}
       />
       <div className="p-5">
         {error != "" ? (

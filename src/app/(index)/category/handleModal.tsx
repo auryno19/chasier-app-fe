@@ -21,6 +21,12 @@ interface HandleModalCategoryProps {
   isDelete: boolean;
   fetchData: () => void;
   onClose: () => void;
+  setStatusToast?: React.Dispatch<
+    React.SetStateAction<"error" | "success" | "warning">
+  >;
+  setHeaderToast?: React.Dispatch<React.SetStateAction<string>>;
+  setMessageToast?: React.Dispatch<React.SetStateAction<string>>;
+  setActiveToast?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
@@ -29,6 +35,10 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
   fetchData,
   onClose,
   isDelete,
+  setActiveToast,
+  setHeaderToast,
+  setMessageToast,
+  setStatusToast,
 }) => {
   const [name, setName] = useState<string>(category?.name || "");
   const [errorName, setErrorName] = useState<string>("");
@@ -48,28 +58,38 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
       };
       if (isDelete) {
         await apiServiceAxios.put(`/category/delete/${category?.id}`);
+        if (setHeaderToast) setHeaderToast("Category Deleted");
+        if (setMessageToast)
+          setMessageToast(`Category "${name}" has been deleted successfully.`);
       } else if (category?.id) {
         await apiServiceAxios.put(`/category/${category.id}`, body);
+        if (setHeaderToast) setHeaderToast("Category Edited");
+        if (setMessageToast)
+          setMessageToast(`Category "${name}" has been edited successfully.`);
       } else {
         await apiServiceAxios.post("/category/add", body);
+        if (setHeaderToast) setHeaderToast("Category Added");
+        if (setMessageToast)
+          setMessageToast(`Category "${name}" has been added successfully.`);
       }
+      if (setStatusToast) setStatusToast("success");
+      if (setActiveToast) setActiveToast(true);
 
-      onClose();
-      fetchData();
+      setTimeout(() => {
+        onClose();
+        fetchData();
+        clearData();
+      }, 300);
     } catch (error) {
       if (error instanceof CustomApiError) {
         if (error.status === 409) {
-          // Handle conflict error (e.g., duplicate category name)
           setErrorName(error.errors?.name || "Category name already exists");
         } else if (error.status === 400) {
-          // Handle validation errors
           setErrorName(error.errors?.name || "Invalid category name");
         } else {
-          // Generic error message
           setErrorName(error.message);
         }
       } else {
-        // Non-API errors (network, etc.)
         setErrorName("An unexpected error occurred");
         console.error("Submission error:", error);
       }
