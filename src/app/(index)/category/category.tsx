@@ -1,9 +1,11 @@
 "use client";
 
 import Button from "@/components/button";
-import apiService from "@/service/apiService";
 import { useEffect, useState } from "react";
 import HandleModalCategory from "./handleModal";
+import apiServiceAxios from "@/service/apiServiceAxios";
+import Paginate from "@/components/paginate";
+import CustomApiError from "@/service/cutomApiError";
 interface Category {
   id: number;
   name: string;
@@ -13,15 +15,36 @@ const Category: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isModalActive, setIsModalActive] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
 
-  const fetchData = async () => {
+  const fetchData = async (page: number) => {
     try {
-      const response = await apiService.get<{ data: Category[] }>("/category");
-      if (response.status === 200) {
-        setCategories(response.data.data);
-      }
+      const { data } = await apiServiceAxios.get<Category[]>(
+        "/category/paginate",
+        undefined,
+        { page: page.toString() }
+      );
+      // console.log("Response:", status, data.data);
+      // const response = await apiService.get<{ data: Category[] }>("/category");
+      setCategories(data.data.datas as unknown as Category[]);
+      setTotalPage(data.data.total_pages || 1);
+      setPage(data.data.page || 1);
+      setPerPage(data.data.per_page || 5);
+      // if (response.status === 200) {
+      // }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      if (error instanceof CustomApiError) {
+        if (error.status === 404) {
+          if (page > 1) {
+            fetchData(page - 1);
+          } else {
+            setError(error.message || "Data not found");
+          }
+        }
+      }
     }
   };
 
@@ -47,11 +70,12 @@ const Category: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
-      <div className="w-full pl-10">
+      <div className="w-full pl-5">
         <Button
           loading={false}
           onClick={openAddModal}
@@ -64,49 +88,58 @@ const Category: React.FC = () => {
         isActive={isModalActive}
         category={editingCategory}
         onClose={closeModal}
-        fetchData={fetchData}
+        fetchData={() => fetchData(page)}
         isDelete={isDeleteModal}
       />
-      <div className="px-5 py-3">
-        <table className="w-full text-center">
-          <thead>
-            <tr className="border-b-2 border-slate-300 ">
-              <th className="max-w-4 ">No</th>
-              <th className="min-w-72">Category Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories &&
-              categories.map((category, index) => (
-                <tr className="border-b-2 border-slate-200" key={category.id}>
-                  <td>{index + 1}</td>
-                  <td>{category.name}</td>
-                  <td className="flex justify-center gap-2">
-                    <Button
-                      loading={false}
-                      onClick={() => openEditModal(category)}
-                      value={"Edit"}
-                      type="warning"
-                      size="sm"
-                      iconStart={
-                        <span className="mynaui--delete-solid mr-2"></span>
-                      }
-                    />
-                    <Button
-                      loading={false}
-                      onClick={() => openDeleteModal(category)}
-                      value={"Delete"}
-                      type="danger"
-                      size="sm"
-                      iconStart={<span className="tabler--edit mr-2"></span>}
-                    />
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+      <div className="p-5">
+        {error != "" ? (
+          <div className="text-center text-xl font-semibold">{error}</div>
+        ) : (
+          <table className="w-full text-center">
+            <thead>
+              <tr className="border-b-2 border-slate-300 ">
+                <th className="max-w-4 ">No</th>
+                <th className="min-w-72">Category Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories &&
+                categories.map((category, index) => (
+                  <tr className="border-b-2 border-slate-200" key={category.id}>
+                    <td>{(page - 1) * perPage + index + 1}</td>
+                    <td>{category.name}</td>
+                    <td className="flex justify-center gap-2">
+                      <Button
+                        loading={false}
+                        onClick={() => openEditModal(category)}
+                        value={"Edit"}
+                        type="warning"
+                        size="sm"
+                        iconStart={
+                          <span className="mynaui--delete-solid mr-2"></span>
+                        }
+                      />
+                      <Button
+                        loading={false}
+                        onClick={() => openDeleteModal(category)}
+                        value={"Delete"}
+                        type="danger"
+                        size="sm"
+                        iconStart={<span className="tabler--edit mr-2"></span>}
+                      />
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        )}
       </div>
+      <Paginate
+        page={page}
+        totalPage={totalPage}
+        onPageChange={(pages) => fetchData(pages)}
+      />
     </>
   );
 };

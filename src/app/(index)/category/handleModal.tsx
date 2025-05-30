@@ -97,6 +97,7 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
             onSubmit={(e) => {
               e.preventDefault();
               submitData();
+              clearData();
             }}
           >
             <div className="mt-4">
@@ -129,7 +130,10 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
 
           <Button
             loading={false}
-            onClick={submitData}
+            onClick={() => {
+              submitData();
+              clearData();
+            }}
             value={isDelete ? "Delete" : category ? "Update Changes" : "Save"}
             type={isDelete ? "danger" : "primary"}
           />

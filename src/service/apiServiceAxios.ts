@@ -4,8 +4,18 @@ import CustomApiError from "./cutomApiError";
 const BASE_URL = "http://localhost:8080/api";
 
 interface ApiResponse<T> {
-  data: T;
+  data: {
+    datas: T[];
+    page?: number;
+    per_page?: number;
+    total?: number;
+    total_pages?: number;
+  };
   message?: string;
+  status: number;
+}
+interface ApiResult<T> {
+  data: T;
   status: number;
 }
 
@@ -15,10 +25,10 @@ const apiServiceAxios = {
     pathParams?: Record<string, string>,
     queryParams?: Record<string, string>,
     options?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> => {
+  ): Promise<ApiResult<ApiResponse<T>>> => {
     try {
       const url = constructUrl(endpoint, pathParams, queryParams);
-      const response = await axios.get<T>(url, options);
+      const response = await axios.get<ApiResponse<T>>(url, options);
       return { data: response.data, status: response.status };
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -41,10 +51,10 @@ const apiServiceAxios = {
     pathParams?: Record<string, string>,
     queryParams?: Record<string, string>,
     options?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> => {
+  ): Promise<ApiResult<ApiResponse<T>>> => {
     try {
       const url = constructUrl(endpoint, pathParams, queryParams);
-      const response = await axios.post<T>(url, body, options);
+      const response = await axios.post<ApiResponse<T>>(url, body, options);
       return { data: response.data, status: response.status };
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -67,10 +77,10 @@ const apiServiceAxios = {
     pathParams?: Record<string, string>,
     queryParams?: Record<string, string>,
     options?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> => {
+  ): Promise<ApiResult<ApiResponse<T>>> => {
     try {
       const url = constructUrl(endpoint, pathParams, queryParams);
-      const response = await axios.put<T>(url, body, options);
+      const response = await axios.put<ApiResponse<T>>(url, body, options);
       return { data: response.data, status: response.status };
     } catch (error) {
       if (axios.isAxiosError(error)) {

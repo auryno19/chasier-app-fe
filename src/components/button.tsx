@@ -43,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     // <div className={`${margin} w-full flex justify-center`}>
     <button
-      className={`${sizeButton} ${background} shadow-md text-white rounded-md hover:opacity-75 transition-all duration-200 flex items-center`}
+      className={`${sizeButton} ${background} shadow-md text-white rounded-md hover:opacity-75 transition-colors duration-200 flex items-center`}
       onClick={onClick}
     >
       {iconStart}

@@ -20,8 +20,11 @@ const Paginate: React.FC<PaginateProps> = ({
           className={`w-4 h-4  p-3 flex items-center justify-center rounded-l-md h ${
             page === 1
               ? "cursor-not-allowed bg-slate-200 text-slate-400"
-              : "bg-slate-400 text-white over:bg-slate-500 duration-200 transition-colors ease-in-out"
+              : "bg-slate-400 text-white hover:bg-slate-500 duration-200 transition-colors ease-in-out"
           }`}
+          onClick={() => {
+            if (page !== 1) onPageChange(page - 1);
+          }}
         >
           <p className="text-sm  flex items-center justify-center">
             <span className="ic--sharp-navigate-before"></span>
@@ -33,7 +36,7 @@ const Paginate: React.FC<PaginateProps> = ({
               key={i + 1}
               className="w-4 h-4 bg-slate-400 p-3 flex items-center justify-center text-white hover:bg-slate-500 duration-200 transition-colors ease-in-out"
               onClick={() => {
-                if (page !== 1) onPageChange(i + 1);
+                onPageChange(i + 1);
               }}
             >
               <p className="text-sm flex items-center justify-center">
