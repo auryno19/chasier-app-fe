@@ -75,6 +75,13 @@ const Sidebar = () => {
         padding=""
         icon="iconamoon--category-bold"
       />
+      <ListMenu
+        menu="Product"
+        isOpen={isOpen}
+        link="/product"
+        padding=""
+        icon="streamline--production-belt-solid"
+      />
       <ListMenuDropDown
         menu="Dropdown"
         isOpen={isOpen}

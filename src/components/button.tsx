@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface ButtonProps {
-  loading: boolean;
+  loading?: boolean;
   onClick: (e: React.FormEvent) => void;
   value: string;
   iconStart?: React.ReactNode;
@@ -11,7 +11,7 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({
-  loading,
+  loading = false,
   onClick,
   value,
   type = "primary",

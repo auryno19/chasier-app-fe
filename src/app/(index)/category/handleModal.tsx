@@ -138,7 +138,6 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
         <div className="flex justify-end gap-2">
           {isDelete && (
             <Button
-              loading={false}
               onClick={() => {
                 onClose();
                 clearData();
@@ -149,7 +148,6 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
           )}
 
           <Button
-            loading={false}
             onClick={() => {
               submitData();
               clearData();

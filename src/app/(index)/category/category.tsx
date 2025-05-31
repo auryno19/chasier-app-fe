@@ -99,7 +99,6 @@ const Category: React.FC = () => {
 
       <div className="w-full pl-5 flex justify-between items-center ">
         <Button
-          loading={false}
           onClick={openAddModal}
           value={"Add Category"}
           iconStart={<span className="typcn--plus mr-2"></span>}
@@ -144,7 +143,6 @@ const Category: React.FC = () => {
                     <td>{category.name}</td>
                     <td className="flex justify-center gap-2">
                       <Button
-                        loading={false}
                         onClick={() => openEditModal(category)}
                         value={"Edit"}
                         type="warning"
@@ -154,7 +152,6 @@ const Category: React.FC = () => {
                         }
                       />
                       <Button
-                        loading={false}
                         onClick={() => openDeleteModal(category)}
                         value={"Delete"}
                         type="danger"
