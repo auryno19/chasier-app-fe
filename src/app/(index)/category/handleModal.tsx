@@ -5,7 +5,6 @@ import FormField from "@/components/formField";
 import Modal from "@/components/modal";
 import ModalBody from "@/components/modalBody";
 import ModalFooter from "@/components/modalFooter";
-// import apiService from "@/service/apiService";
 import apiServiceAxios from "@/service/apiServiceAxios";
 import CustomApiError from "@/service/cutomApiError";
 import { useEffect, useState } from "react";
@@ -83,15 +82,12 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
     } catch (error) {
       if (error instanceof CustomApiError) {
         if (error.status === 409) {
-          setErrorName(error.errors?.name || "Category name already exists");
-        } else if (error.status === 400) {
-          setErrorName(error.errors?.name || "Invalid category name");
+          setErrorName(error.errors?.name || "");
         } else {
           setErrorName(error.message);
         }
       } else {
         setErrorName("An unexpected error occurred");
-        console.error("Submission error:", error);
       }
     }
   };

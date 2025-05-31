@@ -97,7 +97,7 @@ const Category: React.FC = () => {
         active={activeToast}
       />
 
-      <div className="w-full pl-5 flex justify-between items-center ">
+      <div className="w-full px-5 flex justify-between items-center ">
         <Button
           onClick={openAddModal}
           value={"Add Category"}
