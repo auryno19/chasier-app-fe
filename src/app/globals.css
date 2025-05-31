@@ -298,3 +298,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-500 rounded-full;
 }
+
+/* component */
+.form-invalid {
+  @apply border-red-500 border-2;
+}

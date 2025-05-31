@@ -1,8 +1,8 @@
 "use client";
 
 import Button from "@/components/button";
-import Card from "../components/card";
-import CardContainer from "../components/cardContainer";
+import Card from "@/components/card";
+import CardContainer from "@/components/cardContainer";
 import Image from "next/image";
 import apiServiceAxios from "@/service/apiServiceAxios";
 import { useEffect, useState } from "react";

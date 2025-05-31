@@ -2,12 +2,18 @@
 
 import Button from "@/components/button";
 import FormField from "@/components/formField";
+import FormSelect from "@/components/formSelect";
 import Modal from "@/components/modal";
 import ModalBody from "@/components/modalBody";
 import ModalFooter from "@/components/modalFooter";
 import apiServiceAxios from "@/service/apiServiceAxios";
 import CustomApiError from "@/service/cutomApiError";
 import { useEffect, useState } from "react";
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 interface Product {
   id?: number;
@@ -47,19 +53,42 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
   const [stock, setStock] = useState<number>(product?.stock || 0);
   const [price, setPrice] = useState<number>(product?.price || 0);
   const [errorName, setErrorName] = useState<string>("");
+  const [optionsCategory, setOptionsCategory] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [errorCategory, setErrorCategory] = useState<string>("");
   const [errorStock, setErrorStock] = useState<string>("");
   const [errorPrice, setErrorPrice] = useState<string>("");
 
   useEffect(() => {
-    console.log("Product:", product);
-    console.log("Initial Category ID:", product?.category);
+    // console.log("Product:", product);
+    // console.log("Initial Category ID:", product?.category);
     setName(product?.name || "");
     setCategory(product?.category || "");
     setStock(product?.stock || 0);
     setPrice(product?.price || 0);
   }, [product]);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
+  const fetchCategories = async () => {
+    try {
+      const data = await apiServiceAxios.get<Category[]>("/category");
+      const datas = data.data.data as unknown as Category[];
+      const options = datas.map((category) => ({
+        value: category.id.toString(),
+        label: category.name,
+      }));
+      setOptionsCategory(options);
+    } catch (error) {
+      if (error instanceof CustomApiError) {
+        if (error.status === 404) {
+          setErrorCategory("No categories found");
+        }
+      }
+    }
+  };
   const clearData = () => {
     setName("");
     setCategory("");
@@ -142,7 +171,7 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
               clearData();
             }}
           >
-            <div className="mt-4">
+            <div className="mt-3">
               <FormField
                 id={"name"}
                 label={"Product Name"}
@@ -152,42 +181,33 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
                 onFocus={() => setErrorName("")}
                 error={errorName}
               />
-            </div>
-            <label className="text-sm text-slate-600">Category</label>
-            <div className="relative mt-3">
-              <select
-                name="cars"
-                id="cars"
-                className=" w-full bg-slate-300 px-4 py-[0.4rem] focus:outline-none focus:ring-2 focus:ring-sky-600 rounded-md cursor-pointer hover:ring-2 hover:ring-sky-600 appearance-none"
+              <FormSelect
+                id={"category"}
+                label={"Category"}
                 value={category}
-                onChange={(e) => {
-                  setCategory(e.target.value);
-                  setErrorCategory("");
-                  console.log(e.target.value);
-                }}
-              >
-                <option value="" disabled selected>
-                  Select a category
-                </option>
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
-              </select>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.2"
-                stroke="currentColor"
-                className="h-5 w-5 ml-1 absolute top-2.5 right-2.5 text-slate-700"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                />
-              </svg>
+                onChange={(e) => setCategory(e.target.value)}
+                onFocus={() => setErrorCategory("")}
+                error={errorCategory}
+                options={optionsCategory}
+              />
+              <FormField
+                id={"price"}
+                label={"Price"}
+                type={"text"}
+                value={price.toString()}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                onFocus={() => setErrorPrice("")}
+                error={errorPrice}
+              />
+              <FormField
+                id={"stock"}
+                label={"Stock"}
+                type={"text"}
+                value={stock.toString()}
+                onChange={(e) => setStock(Number(e.target.value))}
+                onFocus={() => setErrorStock("")}
+                error={errorStock}
+              />
             </div>
           </form>
         )}
