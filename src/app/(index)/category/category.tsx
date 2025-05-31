@@ -7,6 +7,7 @@ import apiServiceAxios from "@/service/apiServiceAxios";
 import Paginate from "@/components/paginate";
 import CustomApiError from "@/service/cutomApiError";
 import Toast from "@/components/toast";
+import FormField from "@/components/formField";
 interface Category {
   id: number;
   name: string;
@@ -26,22 +27,20 @@ const Category: React.FC = () => {
   const [headerToast, setHeaderToast] = useState("");
   const [messageToast, setMessageToast] = useState("");
   const [activeToast, setActiveToast] = useState(false);
+  const [search, setSearch] = useState("");
 
   const fetchData = async (page: number) => {
     try {
       const { data } = await apiServiceAxios.get<Category[]>(
         "/category/paginate",
         undefined,
-        { page: page.toString() }
+        { page: page.toString(), search: search || "" }
       );
-      // console.log("Response:", status, data.data);
-      // const response = await apiService.get<{ data: Category[] }>("/category");
+      setError("");
       setCategories(data.data.datas as unknown as Category[]);
       setTotalPage(data.data.total_pages || 1);
       setPage(data.data.page || 1);
       setPerPage(data.data.per_page || 5);
-      // if (response.status === 200) {
-      // }
     } catch (error) {
       if (error instanceof CustomApiError) {
         if (error.status === 404) {
@@ -75,17 +74,20 @@ const Category: React.FC = () => {
       setEditingCategory(null);
     }, 500);
   };
-
   useEffect(() => {
     fetchData(1);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+  useEffect(() => {
     if (activeToast) {
       const timer = setTimeout(() => {
         setActiveToast(false);
-      }, 4000); // pastikan direset setelah selesai
+      }, 4000);
       return () => clearTimeout(timer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeToast]);
+
   return (
     <>
       <Toast
@@ -95,13 +97,21 @@ const Category: React.FC = () => {
         active={activeToast}
       />
 
-      <div className="w-full pl-5">
+      <div className="w-full pl-5 flex justify-between items-center ">
         <Button
           loading={false}
           onClick={openAddModal}
           value={"Add Category"}
           iconStart={<span className="typcn--plus mr-2"></span>}
         />
+        <div className="w-1/3">
+          <FormField
+            id={"search"}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search Category"
+          />
+        </div>
       </div>
       <HandleModalCategory
         isActive={isModalActive}
@@ -158,11 +168,13 @@ const Category: React.FC = () => {
           </table>
         )}
       </div>
-      <Paginate
-        page={page}
-        totalPage={totalPage}
-        onPageChange={(pages) => fetchData(pages)}
-      />
+      {!error && (
+        <Paginate
+          page={page}
+          totalPage={totalPage}
+          onPageChange={(pages) => fetchData(pages)}
+        />
+      )}
     </>
   );
 };

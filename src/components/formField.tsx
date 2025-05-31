@@ -2,24 +2,26 @@ import { useState } from "react";
 
 interface FormFieldProps {
   id: string;
-  label: string;
-  type: string;
+  label?: string;
+  type?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onFocus: () => void;
+  onFocus?: () => void;
   error?: string;
   mode?: "dark" | "light";
+  placeholder?: string;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
   id,
   label,
-  type,
+  type = "text",
   value,
   onChange,
   onFocus,
   error,
   mode = "light",
+  placeholder,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -41,7 +43,7 @@ const FormField: React.FC<FormFieldProps> = ({
       <input
         className={`w-full rounded-md mt-2 h-8 ${
           mode == "dark" ? "bg-gray-600" : "bg-slate-300"
-        } px-4 focus:outline-none focus:ring-2 focus:ring-sky-600 ${
+        } px-4 py-5 focus:outline-none focus:ring-2 focus:ring-sky-600 ${
           error ? "form-invalid" : ""
         }`}
         id={id}
@@ -49,6 +51,7 @@ const FormField: React.FC<FormFieldProps> = ({
         value={value}
         onChange={onChange}
         onFocus={onFocus}
+        placeholder={placeholder}
       />
       {type === "password" && (
         <div

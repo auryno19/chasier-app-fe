@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 const CategoryPage = () => {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-2xl mb-5">Category Page</p>
+      <p className="text-2xl font-semibold mt-3 mb-2 pl-5">Category Page</p>
 
       <ListCategory />
     </div>
