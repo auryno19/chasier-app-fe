@@ -8,6 +8,7 @@ interface ButtonProps {
   iconEnd?: React.ReactNode;
   type?: "primary" | "danger" | "warning" | "secondary";
   size?: "md" | "sm" | "xl";
+  submit?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -18,6 +19,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   iconStart = null,
   iconEnd = null,
+  submit = false,
 }) => {
   const [background, setBackground] = useState("");
   const [sizeButton, setSizeButton] = useState("");
@@ -45,6 +47,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       className={`${sizeButton} ${background} shadow-md text-white rounded-md hover:opacity-75 transition-colors duration-200 flex items-center`}
       onClick={onClick}
+      type={submit ? "submit" : "button"}
     >
       {iconStart}
       {loading ? (

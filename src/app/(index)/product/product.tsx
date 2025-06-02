@@ -29,8 +29,7 @@ const ListProduct: React.FC = () => {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [perPage, setPerPage] = useState(5);
+  const [perPage, setPerPage] = useState(6);
   const [statusToast, setStatusToast] = useState<
     "error" | "success" | "warning"
   >("success");
@@ -43,7 +42,11 @@ const ListProduct: React.FC = () => {
       const { data } = await apiServiceAxios.get<Product[]>(
         "/product/paginate",
         undefined,
-        { page: page.toString(), search: search || "" }
+        {
+          page: page.toString(),
+          per_page: perPage.toString(),
+          search: search || "",
+        }
       );
       setError("");
       setProducts(data.data.datas as unknown as Product[]);

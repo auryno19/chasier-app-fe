@@ -111,6 +111,7 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
         ) : (
           <form
             onSubmit={(e) => {
+              console.log("cek cek");
               e.preventDefault();
               submitData();
               clearData();
@@ -144,7 +145,8 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
           )}
 
           <Button
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               submitData();
               clearData();
             }}
