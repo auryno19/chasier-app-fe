@@ -5,7 +5,7 @@ import Card from "@/components/card";
 import CardContainer from "@/components/cardContainer";
 import Image from "next/image";
 import apiServiceAxios from "@/service/apiServiceAxios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomApiError from "@/service/cutomApiError";
 import Toast from "@/components/toast";
 import FormField from "@/components/formField";
@@ -22,6 +22,8 @@ interface Product {
 }
 
 const ListProduct: React.FC = () => {
+  const refCard = useRef<HTMLDivElement>(null);
+  // const [widthCard, setWidthCard] = useState(0);
   const [products, setProducts] = useState<Product[] | null>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isModalActive, setIsModalActive] = useState(false);
@@ -37,6 +39,23 @@ const ListProduct: React.FC = () => {
   const [messageToast, setMessageToast] = useState("");
   const [activeToast, setActiveToast] = useState(false);
   const [search, setSearch] = useState("");
+
+  // useEffect(() => {
+  //   const cardElement = refCard.current;
+  //   if (!cardElement) return;
+  //   const resizeObserver = new ResizeObserver((entries) => {
+  //     for (const entry of entries) {
+  //       if (entry.target === cardElement) {
+  //         setWidthCard(entry.target.getBoundingClientRect().width);
+  //         console.log("card " + entry.target.getBoundingClientRect().width);
+  //       }
+  //     }
+  //   });
+  //   resizeObserver.observe(cardElement);
+  //   return () => {
+  //     resizeObserver.disconnect();
+  //   };
+  // }, [products]);
   const fetchData = async (page: number) => {
     try {
       const { data } = await apiServiceAxios.get<Product[]>(
@@ -152,7 +171,11 @@ const ListProduct: React.FC = () => {
                         height={100}
                       />
                     </div>
-                    <div className="w-2/3  px-3 py-2 flex flex-col justify-between">
+                    <div
+                      ref={refCard}
+                      className="w-2/3  px-3 py-2 flex flex-col justify-between"
+                    >
+                      {/* <p>lebar : {widthCard} px</p> */}
                       <div>
                         <p className="text-lg font-semibold">{product.name}</p>
                         <p className="text-sm font-light">{product.category}</p>

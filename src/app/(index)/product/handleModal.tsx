@@ -62,8 +62,6 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
   const [errorPrice, setErrorPrice] = useState<string>("");
 
   useEffect(() => {
-    // console.log("Product:", product);
-    // console.log("Initial Category ID:", product?.category);
     setName(product?.name || "");
     setCategory(product?.category || "");
     setStock(product?.stock || 0);
@@ -139,9 +137,6 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
           setErrorCategory(error.errors?.category || "");
           setErrorStock(error.errors?.stock || "");
           setErrorPrice(error.errors?.price || "");
-          console.log(error.errors?.name);
-          console.log(error.errors?.category);
-          console.log(errorName);
         } else {
           setErrorName(error.message);
         }
