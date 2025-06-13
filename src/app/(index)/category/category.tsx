@@ -6,7 +6,6 @@ import HandleModalCategory from "./handleModal";
 import apiServiceAxios from "@/service/apiServiceAxios";
 import Paginate from "@/components/paginate";
 import CustomApiError from "@/service/cutomApiError";
-import Toast from "@/components/toast";
 import FormField from "@/components/formField";
 interface Category {
   id: number;
@@ -21,12 +20,7 @@ const Category: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-  const [statusToast, setStatusToast] = useState<
-    "error" | "success" | "warning"
-  >("success");
-  const [headerToast, setHeaderToast] = useState("");
-  const [messageToast, setMessageToast] = useState("");
-  const [activeToast, setActiveToast] = useState(false);
+
   const [search, setSearch] = useState("");
 
   const fetchData = async (page: number) => {
@@ -79,24 +73,9 @@ const Category: React.FC = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
-  useEffect(() => {
-    if (activeToast) {
-      const timer = setTimeout(() => {
-        setActiveToast(false);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [activeToast]);
 
   return (
     <>
-      <Toast
-        status={statusToast}
-        header={headerToast}
-        message={messageToast}
-        active={activeToast}
-      />
-
       <div className="w-full px-5 flex justify-between items-center ">
         <Button
           onClick={openAddModal}
@@ -118,10 +97,6 @@ const Category: React.FC = () => {
         onClose={closeModal}
         fetchData={() => fetchData(page)}
         isDelete={isDeleteModal}
-        setActiveToast={setActiveToast}
-        setHeaderToast={setHeaderToast}
-        setMessageToast={setMessageToast}
-        setStatusToast={setStatusToast}
       />
       <div className="p-5">
         {error != "" ? (

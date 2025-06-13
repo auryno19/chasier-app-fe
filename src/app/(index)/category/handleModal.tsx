@@ -1,5 +1,6 @@
 "use client";
 
+import { useToast } from "@/app/context/toastContext";
 import Button from "@/components/button";
 import FormField from "@/components/formField";
 import Modal from "@/components/modal";
@@ -20,25 +21,15 @@ interface HandleModalCategoryProps {
   isDelete: boolean;
   fetchData: () => void;
   onClose: () => void;
-  setStatusToast?: React.Dispatch<
-    React.SetStateAction<"error" | "success" | "warning">
-  >;
-  setHeaderToast?: React.Dispatch<React.SetStateAction<string>>;
-  setMessageToast?: React.Dispatch<React.SetStateAction<string>>;
-  setActiveToast?: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
 const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
   isActive,
   category,
   fetchData,
   onClose,
   isDelete,
-  setActiveToast,
-  setHeaderToast,
-  setMessageToast,
-  setStatusToast,
 }) => {
+  const toast = useToast();
   const [name, setName] = useState<string>(category?.name || "");
   const [errorName, setErrorName] = useState<string>("");
 
@@ -55,30 +46,35 @@ const HandleModalCategory: React.FC<HandleModalCategoryProps> = ({
       const body = {
         name: name,
       };
+
       if (isDelete) {
         await apiServiceAxios.put(`/category/delete/${category?.id}`);
-        if (setHeaderToast) setHeaderToast("Category Deleted");
-        if (setMessageToast)
-          setMessageToast(`Category "${name}" has been deleted successfully.`);
+        toast.showToast(
+          "success",
+          "Category Deleted",
+          `Category "${name}" has been deleted successfully.`
+        );
       } else if (category?.id) {
         await apiServiceAxios.put(`/category/${category.id}`, body);
-        if (setHeaderToast) setHeaderToast("Category Edited");
-        if (setMessageToast)
-          setMessageToast(`Category "${name}" has been edited successfully.`);
+        toast.showToast(
+          "success",
+          "Category Edited",
+          `Category "${name}" has been edited successfully.`
+        );
       } else {
         await apiServiceAxios.post("/category/add", body);
-        if (setHeaderToast) setHeaderToast("Category Added");
-        if (setMessageToast)
-          setMessageToast(`Category "${name}" has been added successfully.`);
+        toast.showToast(
+          "success",
+          "Category Added",
+          `Category "${name}" has been added successfully.`
+        );
       }
-      if (setStatusToast) setStatusToast("success");
-      if (setActiveToast) setActiveToast(true);
+      onClose();
+      fetchData();
+      clearData();
+      // setTimeout(() => {
 
-      setTimeout(() => {
-        onClose();
-        fetchData();
-        clearData();
-      }, 300);
+      // }, 300);
     } catch (error) {
       if (error instanceof CustomApiError) {
         if (error.status === 409) {

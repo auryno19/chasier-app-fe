@@ -1,5 +1,6 @@
 "use client";
 
+import { useToast } from "@/app/context/toastContext";
 import Button from "@/components/button";
 import FormField from "@/components/formField";
 import FormSelect from "@/components/formSelect";
@@ -44,11 +45,8 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
   fetchData,
   onClose,
   isDelete,
-  setActiveToast,
-  setHeaderToast,
-  setMessageToast,
-  setStatusToast,
 }) => {
+  const toast = useToast();
   const [name, setName] = useState<string>(product?.name || "");
   const [category, setCategory] = useState<string>(product?.category || "");
   const [stock, setStock] = useState<number>(product?.stock || 0);
@@ -108,26 +106,30 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
       };
       if (isDelete) {
         await apiServiceAxios.put(`/product/delete/${product?.id}`);
-        if (setHeaderToast) setHeaderToast("Product Deleted");
-        if (setMessageToast)
-          setMessageToast(`Product "${name}" has been deleted successfully.`);
+        toast.showToast(
+          "success",
+          "Product Deleted",
+          `Product "${name}" has been deleted successfully.`
+        );
       } else if (product?.id) {
         await apiServiceAxios.put(`/product/${product.id}`, body);
-        if (setHeaderToast) setHeaderToast("Product Edited");
-        if (setMessageToast)
-          setMessageToast(`Product "${name}" has been edited successfully.`);
+        toast.showToast(
+          "success",
+          "Product Edited",
+          `Product "${name}" has been edited successfully.`
+        );
       } else {
         await apiServiceAxios.post("/product/add", body);
-        if (setHeaderToast) setHeaderToast("Product Added");
-        if (setMessageToast)
-          setMessageToast(`Product "${name}" has been added successfully.`);
+        toast.showToast(
+          "success",
+          "Product Added",
+          `Product "${name}" has been added successfully.`
+        );
       }
-      if (setStatusToast) setStatusToast("success");
-      if (setActiveToast) setActiveToast(true);
 
+      fetchData();
+      onClose();
       setTimeout(() => {
-        onClose();
-        fetchData();
         clearData();
       }, 300);
     } catch (error) {
@@ -227,7 +229,6 @@ const HandleModalProduct: React.FC<HandleModalProductProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 submitData();
-                clearData();
               }}
               value={isDelete ? "Delete" : product ? "Update Changes" : "Save"}
               type={isDelete ? "danger" : "primary"}

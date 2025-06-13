@@ -7,7 +7,6 @@ import Image from "next/image";
 import apiServiceAxios from "@/service/apiServiceAxios";
 import { useEffect, useRef, useState } from "react";
 import CustomApiError from "@/service/cutomApiError";
-import Toast from "@/components/toast";
 import FormField from "@/components/formField";
 import HandleModalProduct from "./handleModal";
 import Paginate from "@/components/paginate";
@@ -32,12 +31,6 @@ const ListProduct: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [perPage, setPerPage] = useState(6);
-  const [statusToast, setStatusToast] = useState<
-    "error" | "success" | "warning"
-  >("success");
-  const [headerToast, setHeaderToast] = useState("");
-  const [messageToast, setMessageToast] = useState("");
-  const [activeToast, setActiveToast] = useState(false);
   const [search, setSearch] = useState("");
 
   // useEffect(() => {
@@ -111,23 +104,8 @@ const ListProduct: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  useEffect(() => {
-    if (activeToast) {
-      const timer = setTimeout(() => {
-        setActiveToast(false);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [activeToast]);
-
   return (
     <>
-      <Toast
-        status={statusToast}
-        header={headerToast}
-        message={messageToast}
-        active={activeToast}
-      />
       <div className="w-full px-4 flex justify-between items-center ">
         <Button
           onClick={openAddModal}
@@ -149,10 +127,6 @@ const ListProduct: React.FC = () => {
         onClose={closeModal}
         fetchData={() => fetchData(page)}
         isDelete={isDeleteModal}
-        setActiveToast={setActiveToast}
-        setHeaderToast={setHeaderToast}
-        setMessageToast={setMessageToast}
-        setStatusToast={setStatusToast}
       />
       {error ? (
         <div className="text-center text-xl font-semibold">{error}</div>

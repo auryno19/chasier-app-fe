@@ -61,6 +61,7 @@ const Sidebar = () => {
       <div className="flex w-full justify-center">
         <hr className=" w-[80%] items-center my-3 border-slate-600 opacity-75" />
       </div>
+
       <ListMenu
         menu="Dashboard"
         isOpen={isOpen}
